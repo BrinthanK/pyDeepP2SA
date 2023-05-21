@@ -1,10 +1,26 @@
 ## Code Documentation
 
+pyDeepP2SA is an advanced particle size and shape analysis (P2SA) package that leverages the cutting-edge Segment Anything Model (SAM) developed by Facebook Inc. for highly accurate and robust object segmentation. Unlike traditional approaches that rely on manual training and old-fashioned watershed algorithms, pyDeepP2SA revolutionises the field by offering a zero-generalisation segmentation technique. With minimal manual intervention, this package delivers exceptional results and simplifies the entire analysis workflow.
+
+### Prerequisites
+
+To use pyDeepP2SA, you need to fulfill the following prerequisites:
+
+- **Segment Anything Installation:** Install the "Segment Anything" package by running the following command:
+
+  ```
+  pip install git+https://github.com/facebookresearch/segment-anything.git
+  ```
+
+- **SAM Checkpoint:** Download one of the three available checkpoints provided by Facebook Inc. These checkpoints contain pre-trained models that are essential for the segmentation process. Save the downloaded checkpoint in a folder of your choice or on Google Drive if you are using the Colab platform. You can download the checkpoints from the [Segment Anything Model Checkpoints](https://github.com/facebookresearch/segment-anything#model-checkpoints) repository.
+
+Please ensure that you have installed the "Segment Anything" package and obtained the SAM checkpoint before proceeding with pyDeepP2SA.
+
 ### Functions
 
 #### `generate_masks(image, sam_checkpoint, points_per_side=32, pred_iou_thresh=0.95, stability_score_thresh=0.9, crop_n_layers=1, crop_n_points_downscale_factor=2, min_mask_region_area=100)`
 
-This function generates masks for an input image using a SAM (Segment Anything Model) checkpoint.
+This function generates masks for an input image using a SAM checkpoint.
 
 - `image`: The input image for which masks need to be generated.
 - `sam_checkpoint`: The path to the SAM checkpoint file.
