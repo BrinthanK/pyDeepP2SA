@@ -22,12 +22,12 @@ install_requires = [
 
 setup(
     name='pyDeepP2SA',
-    version='0.0.1',
+    version='0.0.2',
     description='A python package for particle size and shape analysis using deep learning',
     py_modules=["pyDeepP2SA"],
     package_dir={'': 'src'},
     long_description=open('README.md').read() + '\n\n' + open('CHANGELOG.txt').read(),
-    url='',
+    url='https://github.com/BrinthanK/pyDeepP2SA',
     author='Brinthan K',
     author_email='kanesalingambrinthan187@gmail.com',
     license='MIT',
