@@ -1,0 +1,10 @@
+Change Log
+==========
+
+0.0.1 (17th May 2023)
+---------------------
+
+- Testing
+- Corrections on functions 
+
+
