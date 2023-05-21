@@ -1,4 +1,4 @@
-Code Documentation
+## Code Documentation
 Functions
 generate_masks(image, sam_checkpoint, points_per_side=32, pred_iou_thresh=0.95, stability_score_thresh=0.9, crop_n_layers=1, crop_n_points_downscale_factor=2, min_mask_region_area=100)
 This function generates masks for an input image using a SAM (Segment Anything Model) checkpoint.
