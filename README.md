@@ -16,6 +16,14 @@ To use pyDeepP2SA, you need to fulfill the following prerequisites:
 
 Please ensure that you have installed the "Segment Anything" package and obtained the SAM checkpoint before proceeding with pyDeepP2SA.
 
+### Installation 
+
+Install pyDeepP2SA:
+
+  ```
+  pip install pyDeepP2SA
+  ```
+
 ### Functions
 
 #### `generate_masks(image, sam_checkpoint, points_per_side=32, pred_iou_thresh=0.95, stability_score_thresh=0.9, crop_n_layers=1, crop_n_points_downscale_factor=2, min_mask_region_area=100)`
@@ -36,10 +44,10 @@ Returns:
 
 #### `visualise_masks(image, masks)`
 
-This function visualizes the segmented image with the generated masks.
+This function visualises the segmented image with the generated masks.
 
 - `image`: The input image.
-- `masks`: The list of masks to visualize.
+- `masks`: The list of masks to visualise.
 
 #### `save_masks_to_csv(masks, csv_directory, pixel_to_micron)`
 
@@ -57,7 +65,7 @@ This function plots the original image with bounding boxes around the masks that
 - `masks`: The list of masks.
 - `diameter_threshold`: The diameter threshold for filtering masks.
 - `circularity_threshold`: The circularity threshold for filtering masks.
-- `pixel_to_micron`: The conversion factor from pixels to microns.
+- `pixel_to_micron`: The conversion factor from pixels to microns, where "micron" is used as a unit name without any specific conversion factor associated with its general meaning.
 
 #### `ind_mask(masks, diameter_threshold, circularity_threshold, pixel_to_micron, image)`
 
@@ -115,9 +123,9 @@ The code relies on the following dependencies:
 - `scikit-image`: A library for image processing in Python.
 - `torch` and `torchvision`: Libraries for deep learning and computer vision tasks.
 - `opencv`: A library for image and video manipulation.
-- `matplotlib`: A library for creating visualizations in Python.
+- `matplotlib`: A library for creating visualisations in Python.
 - `pandas`: A library for data manipulation and analysis.
-- `seaborn`: A library for statistical data visualization.
+- `seaborn`: A library for statistical data visualisation.
 
 Make sure these dependencies are installed in your Python environment before running the code.
 
@@ -133,7 +141,7 @@ To use the provided functions, follow these steps:
 
 4. Call the `generate_masks` function, passing the image and SAM checkpoint file path as arguments. This will generate masks for the image.
 
-5. Visualize the generated masks using the `visualise_masks` function, passing the original image and generated masks as arguments.
+5. Visualise the generated masks using the `visualise_masks` function, passing the original image and generated masks as arguments.
 
 6. Save the generated masks and their region properties to a CSV file using the `save_masks_to_csv` function, providing the masks, the directory to save the CSV file, and the conversion factor from pixels to microns.
 
@@ -151,4 +159,4 @@ To use the provided functions, follow these steps:
 
 Please note that you may need to provide additional arguments or modify the existing ones based on your specific use case.
 
-I hope this documentation helps you understand and utilize the provided code effectively! Let me know if you have any further questions.
+I hope this documentation helps you understand and utilise the provided code effectively! Let me know if you have any further questions.
