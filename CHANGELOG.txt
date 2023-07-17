@@ -7,4 +7,8 @@ Change Log
 - Testing
 - Corrections on functions 
 
+0.0.3 (17th July 2023)
+----------------------
+
+-Added the characterisation section to the package
 
