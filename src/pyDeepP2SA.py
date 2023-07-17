@@ -13,7 +13,12 @@ import seaborn as sns
 import matplotlib as mpl
 from skimage.segmentation import clear_border
 import math
+from scipy.signal import argrelextrema
+from skimage import measure
+from scipy.optimize import curve_fit
+import matplotlib.patches as patches
 
+# Particle shape and size analysis section 
 def generate_masks(image, sam_checkpoint,
                    points_per_side=32, pred_iou_thresh=0.95, stability_score_thresh=0.9,
                    crop_n_layers=1, crop_n_points_downscale_factor=2, min_mask_region_area=100):
@@ -292,4 +297,233 @@ def plot_cir(diameter_threshold, circularity_threshold, num_bins, csv_directory)
     ax.set(xlabel='Circularity', ylabel='Number of particles')
     plt.xticks(fontsize=12)
     plt.title("Circularity distribution")
+    plt.show()
+
+# Characterisation section 
+
+def line_scan(image, image_bse, masks, circularity_threshold, min_area, csv_file, pixel_to_micron, line_distance_man, plot=False):
+    # Resize the BSE image to match the input image
+    image_bse = resize(image_bse, image.shape)
+
+    mask_details = []
+
+    # Open the CSV file for writing mask details
+    with open(csv_file, 'w', newline='') as csvfile:
+        fieldnames = ['Mask', 'Area', 'Circularity', 'Type', 'BBox', 'Predicted IOU', 'Point Coords',
+                      'Stability Score', 'Perimeter', 'Diameter']
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+        # Write the CSV header
+        writer.writeheader()
+
+        cenosphere_images = []
+        solidsphere_images = []
+
+        # Process each mask
+        for i, mask in enumerate(masks):
+            segmentation_array = mask['segmentation']
+            area = mask['area']
+            predicted_iou = mask['predicted_iou']
+            bbox = mask['bbox']  # Bounding box [x, y, w, h]
+            point_coords = mask['point_coords']
+            stability_score = mask['stability_score']
+            crop_box = mask['crop_box']
+
+            # Crop the segmented image using the bounding box
+            x, y, w, h = bbox
+            segmented_image = cv2.bitwise_and(image_bse, image_bse, mask=segmentation_array.astype(np.uint8))
+            cropped_segmented_image = segmented_image[y:y+h, x:x+w]
+
+            # Function to calculate circularity of a mask
+            def calculate_circularity(segmentation_array):
+                contours, _ = cv2.findContours(segmentation_array.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+                perimeter = cv2.arcLength(contours[0], True)
+                area = cv2.contourArea(contours[0])
+                if perimeter == 0:
+                    return 0
+                circularity = 4 * np.pi * (area / (perimeter * perimeter))
+                return circularity
+
+            # Function for the polynomial fit
+            def polynomial_func(x, a, b, c, d, e):
+                return a * x**4 + b * x**3 + c * x**2 + d * x + e
+
+            # Calculate circularity
+            circularity = calculate_circularity(segmentation_array)
+
+            # Check circularity and area thresholds
+            if circularity > circularity_threshold and area > min_area:
+                height = cropped_segmented_image.shape[0]
+                start_line = int(0.1 * height)  # Start line at 10% of the height
+                end_line = int(0.9 * height)  # End line at 90% of the height
+                line_distance = end_line - start_line
+
+                num_line_scans = int(line_distance / (line_distance_man / pixel_to_micron))
+                line_scan_indices = np.linspace(start_line, end_line, num_line_scans, dtype=int)
+                line_scans = []  # Store line scan data for each mask
+
+                # Perform line scanning
+                for line_index in line_scan_indices:
+                    line_pixel_values = cropped_segmented_image[line_index, :].flatten()
+                    x = np.arange(len(line_pixel_values))
+
+                    # Fit a polynomial curve to the line scan data
+                    popt_line, pcov_line = curve_fit(polynomial_func, x, line_pixel_values)
+                    fitted_curve_line = polynomial_func(x, *popt_line)
+
+                    # Find the maxima or minima points of the fitted curve
+                    line_extremum_index = np.argmax(fitted_curve_line) if popt_line[0] < 0 else np.argmin(fitted_curve_line)
+                    line_extremum_x = x[line_extremum_index]
+                    line_extremum_y = fitted_curve_line[line_extremum_index]
+
+                    line_maxima_indices = argrelextrema(fitted_curve_line, np.greater)[0]
+                    line_minima_indices = argrelextrema(fitted_curve_line, np.less)[0]
+
+                    # Store line scan data
+                    line_scans.append({
+                        'line_pixel_values': line_pixel_values,
+                        'fitted_curve_line': fitted_curve_line,
+                        'line_extremum_x': line_extremum_x,
+                        'line_extremum_y': line_extremum_y,
+                        'line_maxima_indices': line_maxima_indices,
+                        'line_minima_indices': line_minima_indices
+                    })
+
+                # Count the total number of line_minima_indices
+                total_line_minima_indices = sum(len(scan['line_minima_indices']) for scan in line_scans)
+
+                # Classify the segment
+                segment_type = 'cenosphere' if total_line_minima_indices > 0 else 'solid sphere'
+
+                # Save additional region properties
+                labeled_mask = np.zeros_like(segmentation_array, dtype=np.uint8)
+                labeled_mask[segmentation_array] = 1
+                labeled_mask = measure.label(labeled_mask)
+                cleared_mask = clear_border(labeled_mask)
+                region_props = measure.regionprops(cleared_mask)
+
+                for region in region_props:
+                    # Convert area, perimeter, and diameter from pixels to micrometers
+                    area_pixels = region.area
+                    perimeter_pixels = region.perimeter
+                    diameter_pixels = region.major_axis_length
+
+                    # Convert measurements to microns
+                    area_2 = area_pixels * pixel_to_micron**2
+                    perimeter = perimeter_pixels * pixel_to_micron
+                    diameter = diameter_pixels * pixel_to_micron
+
+                    # Append mask details to the list
+                    mask_details.append({
+                        'Mask': i + 1,
+                        'Area': area * pixel_to_micron**2,
+                        'Circularity': circularity,
+                        'BBox': bbox,
+                        'Predicted IOU': predicted_iou,
+                        'Point Coords': point_coords,
+                        'Stability Score': stability_score,
+                        'Perimeter': perimeter,
+                        'Diameter': diameter,
+                        'Type': segment_type
+                    })
+
+                    # Write mask details to CSV file
+                    writer.writerow({
+                        'Mask': i + 1, 'Area': area, 'Circularity': circularity, 'BBox': bbox,
+                        'Predicted IOU': predicted_iou, 'Point Coords': point_coords,
+                        'Stability Score': stability_score, 'Perimeter': perimeter,
+                        'Diameter': diameter, 'Type': segment_type
+                    })
+
+def plot_segment_bounding_boxes(csv_file, segment_types):
+    # Read the CSV file and extract the relevant data
+    mask_details = []
+    with open(csv_file, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            mask_details.append(row)
+
+    # Filter the mask details based on the segment types
+    filtered_mask_details = [mask for mask in mask_details if mask['Type'] in segment_types]
+
+    # Create a single plot
+    fig, ax = plt.subplots()
+
+    # Load and plot the corresponding images with bounding boxes
+    colors = ['r', 'b']  # Colors for each segment type
+
+    for idx, segment_type in enumerate(segment_types):
+        segments = [mask for mask in filtered_mask_details if mask['Type'] == segment_type]
+
+        for mask in segments:
+            bbox = eval(mask['BBox'])
+
+            # Plot the image
+            plt.imshow(image, cmap='gray')
+
+            # Create a rectangle patch for the bounding box
+            x, y, w, h = bbox
+            rect = patches.Rectangle((x, y), w, h, linewidth=1, edgecolor=colors[idx], facecolor='none')
+
+            # Add the rectangle patch to the plot
+            ax.add_patch(rect)
+
+    # Set the title
+    #plt.title(f"Segment Types: {', '.join(segment_types)}")
+
+    # Create custom legend patches
+    legend_patches = [patches.Patch(facecolor='none', edgecolor=colors[i], label=segment_types[i]) for i in range(len(segment_types))]
+
+    # Add the legend with the custom patches
+    plt.legend(handles=legend_patches,bbox_to_anchor=(0.5, -0.02), loc='upper center', ncol=len(segment_types))
+
+    plt.axis('off')
+    plt.tight_layout()
+
+    # Show the plot
+    plt.show()
+
+def psd_spheres(csv_file):
+    cenosphere_sizes = []
+    solid_sizes = []
+
+    with open(csv_file, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            mask_type = row['Type']
+            diameter = float(row['Diameter'])
+
+            if mask_type == 'cenosphere':
+                cenosphere_sizes.append(diameter)
+            else:
+                solid_sizes.append(diameter)
+
+    fig, ax = plt.subplots()
+    sns.histplot(cenosphere_sizes, bins=10, kde=True, color='#FFBE86', label='Cenospheres', ax=ax)
+    sns.histplot(solid_sizes, bins=10, kde=True, color='#8EBAD9', label='Solid Spheres', ax=ax)
+    ax.set_xlabel('Diameter (µm)')
+    ax.set_ylabel('Count')
+    ax.legend()
+    plt.show()
+
+def box_plots_spheres(csv_file):
+    cenosphere_sizes = []
+    solid_sizes = []
+
+    with open(csv_file, 'r') as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            mask_type = row['Type']
+            diameter = float(row['Diameter'])
+
+            if mask_type == 'cenosphere':
+                cenosphere_sizes.append(diameter)
+            else:
+                solid_sizes.append(diameter)
+
+    fig, ax = plt.subplots()
+    sns.boxplot(data=[cenosphere_sizes, solid_sizes], ax=ax)
+    ax.set_xticklabels(['Cenospheres', 'Solid Spheres'])
+    ax.set_ylabel('Diameter (µm)')
+    ax.set_title('Box Plot - Cenospheres vs Solid Spheres')
     plt.show()
