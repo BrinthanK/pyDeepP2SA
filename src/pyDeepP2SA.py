@@ -435,7 +435,7 @@ def line_scan(image, image_bse, masks, circularity_threshold, min_area, csv_file
                         'Diameter': diameter, 'Type': segment_type
                     })
 
-def plot_segment_bounding_boxes(csv_file, segment_types):
+def plot_segment_bounding_boxes(csv_file, segment_types, image):
     # Read the CSV file and extract the relevant data
     mask_details = []
     with open(csv_file, 'r') as file:
