@@ -22,7 +22,7 @@ install_requires = [
 
 setup(
     name='pyDeepP2SA',
-    version='0.0.5',
+    version='0.0.6',
     description='A python package for particle size and shape analysis using deep learning',
     py_modules=["pyDeepP2SA"],
     package_dir={'': 'src'},

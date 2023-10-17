@@ -17,3 +17,8 @@ Change Log
 
 - Changed the input arguments of plot_segment_bounding_box function 
 
+0.0.6 (17th October 2023)
+----------------------
+
+- Improved the package with the line_scan function, example notebook and better documentation.  
+

@@ -1,4 +1,7 @@
 # pyDeepP2SA
+
+
+
 ## Code Documentation
 
 pyDeepP2SA is an advanced particle size and shape analysis (P2SA) package that leverages the cutting-edge Segment Anything Model (SAM) developed by Facebook Inc. for highly accurate and robust object segmentation. Unlike traditional approaches that rely on manual training and old-fashioned watershed algorithms, pyDeepP2SA revolutionises the field by offering a zero-generalisation segmentation technique. With minimal manual intervention, this package delivers exceptional results and simplifies the entire analysis workflow.
@@ -190,6 +193,10 @@ The code relies on the following dependencies:
 - `seaborn`: A library for statistical data visualisation.
 
 Make sure these dependencies are installed in your Python environment before running the code.
+
+### Example workflow
+
+You can access an example worksheet that demonstrates fundamental tasks using this package. If needed, you can export the worksheet to Colab, allowing you to leverage online resources and capabilities.
 
 Please note that you may need to provide additional arguments or modify the existing ones based on your specific use case.
 
