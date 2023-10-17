@@ -116,7 +116,7 @@ This function reads the CSV file and plots the circularity distribution using a 
 - `csv_directory`: The directory where the CSV file is located.
 
 
-#### `line_scan(image, image_bse, masks, circularity_threshold, min_area, csv_file, pixel_to_micron, line_distance_man, plot=False)``
+#### `line_scan(image, image_bse, masks, circularity_threshold, min_area, csv_file, pixel_to_micron, line_distance_man, plot=False)`
 
 Perform line scanning analysis on segmented masks within an image and store the results in a CSV file.
 
