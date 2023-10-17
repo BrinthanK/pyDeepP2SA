@@ -145,6 +145,38 @@ The total number of line minima indices is used to classify the mask as a 'cenos
 
 Region properties (area, perimeter, diameter) are also calculated and converted from pixels to micrometers using the provided conversion factor. These properties are added to the CSV file, along with the mask details.
 
+
+Certainly! Here's the documentation for the provided functions in Markdown format:
+
+### `plot_segment_bounding_boxes(csv_file, segment_types, image)`
+
+This function plots bounding boxes on an image based on mask details from a CSV file for specific segment types.
+
+- **csv_file** (str): The path to the CSV file containing mask details.
+- **segment_types** (list): A list of segment types (e.g., ['cenosphere', 'solid sphere']) for which bounding boxes will be plotted.
+- **image** (ndarray): The original image on which the bounding boxes will be overlaid.
+
+The function reads the CSV file, filters mask details based on the specified segment types, and then creates a plot with bounding boxes. Each bounding box corresponds to a mask in the CSV file and is color-coded based on the segment type. A legend is included to explain the color-coding. The resulting plot is displayed.
+
+### `psd_spheres(csv_file)`
+
+This function plots a particle size distribution (PSD) for cenospheres and solid spheres based on diameter information from a CSV file.
+
+- **csv_file** (str): The path to the CSV file containing mask details, including diameter information.
+
+The function reads the CSV file, separates masks into cenospheres and solid spheres, and then creates a histogram with kernel density estimation (KDE) for each category. The cenospheres are displayed in a color coded as '#FFBE86', and solid spheres are displayed in a color coded as '#8EBAD9'. The x-axis represents the diameter in micrometers, and the y-axis represents the count of particles. A legend is included to distinguish between cenospheres and solid spheres.
+
+### `box_plots_spheres(csv_file)`
+
+This function creates box plots to compare the diameters of cenospheres and solid spheres based on mask details from a CSV file.
+
+- **csv_file** (str): The path to the CSV file containing mask details, including diameter information.
+
+The function reads the CSV file, separates masks into cenospheres and solid spheres, and then generates a box plot to compare the diameters of the two categories. The x-axis is labeled with 'Cenospheres' and 'Solid Spheres,' while the y-axis represents the diameter in micrometers. The title of the plot is 'Box Plot - Cenospheres vs Solid Spheres.'
+
+These functions are designed for visualizing and analyzing mask details and particle size distributions based on the information stored in the CSV file. You can use them to gain insights into the characteristics of segmented objects in your images.
+
+
 ### Dependencies
 
 The code relies on the following dependencies:
