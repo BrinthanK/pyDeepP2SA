@@ -22,3 +22,8 @@ Change Log
 
 - Improved the package with the line_scan function, example notebook and better documentation.  
 
+0.0.7 (17th October 2023)
+----------------------
+
+- Modified for an error 
+
