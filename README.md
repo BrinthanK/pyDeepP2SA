@@ -148,7 +148,7 @@ Region properties (area, perimeter, diameter) are also calculated and converted 
 
 Certainly! Here's the documentation for the provided functions in Markdown format:
 
-### `plot_segment_bounding_boxes(csv_file, segment_types, image)`
+#### `plot_segment_bounding_boxes(csv_file, segment_types, image)`
 
 This function plots bounding boxes on an image based on mask details from a CSV file for specific segment types.
 
@@ -158,7 +158,7 @@ This function plots bounding boxes on an image based on mask details from a CSV 
 
 The function reads the CSV file, filters mask details based on the specified segment types, and then creates a plot with bounding boxes. Each bounding box corresponds to a mask in the CSV file and is color-coded based on the segment type. A legend is included to explain the color-coding. The resulting plot is displayed.
 
-### `psd_spheres(csv_file)`
+#### `psd_spheres(csv_file)`
 
 This function plots a particle size distribution (PSD) for cenospheres and solid spheres based on diameter information from a CSV file.
 
@@ -166,7 +166,7 @@ This function plots a particle size distribution (PSD) for cenospheres and solid
 
 The function reads the CSV file, separates masks into cenospheres and solid spheres, and then creates a histogram with kernel density estimation (KDE) for each category. The cenospheres are displayed in a color coded as '#FFBE86', and solid spheres are displayed in a color coded as '#8EBAD9'. The x-axis represents the diameter in micrometers, and the y-axis represents the count of particles. A legend is included to distinguish between cenospheres and solid spheres.
 
-### `box_plots_spheres(csv_file)`
+#### `box_plots_spheres(csv_file)`
 
 This function creates box plots to compare the diameters of cenospheres and solid spheres based on mask details from a CSV file.
 
@@ -190,34 +190,6 @@ The code relies on the following dependencies:
 - `seaborn`: A library for statistical data visualisation.
 
 Make sure these dependencies are installed in your Python environment before running the code.
-
-### Usage
-
-To use the provided functions, follow these steps:
-
-1. Ensure that you have the required dependencies installed.
-
-2. Import the required functions from the code file into your own Python script or interactive session.
-
-3. Load an image of interest.
-
-4. Call the `generate_masks` function, passing the image and SAM checkpoint file path as arguments. This will generate masks for the image.
-
-5. Visualise the generated masks using the `visualise_masks` function, passing the original image and generated masks as arguments.
-
-6. Save the generated masks and their region properties to a CSV file using the `save_masks_to_csv` function, providing the masks, the directory to save the CSV file, and the conversion factor from pixels to microns.
-
-7. Optionally, plot the original image with bounding boxes around the masks that meet specific diameter and circularity thresholds using the `plot_diameters` function.
-
-8. Further filter the masks based on diameter and circularity thresholds, and plot the filtered masks along with their region properties using the `ind_mask` function.
-
-9. Generate a summary of the filtered mask region properties using the `stat_sum` function.
-
-10. Plot boxplots of the area, perimeter, diameter, and circularity for the filtered masks using the `plot_boxplots` function.
-
-11. Plot the particle size distribution (PSD) using a histogram and cumulative frequency curve using the `plot_psd` function.
-
-12. Plot the circularity distribution using a histogram using the `plot_cir` function.
 
 Please note that you may need to provide additional arguments or modify the existing ones based on your specific use case.
 
