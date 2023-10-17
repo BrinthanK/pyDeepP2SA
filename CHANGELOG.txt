@@ -27,3 +27,8 @@ Change Log
 
 - Modified for an error 
 
+
+0.0.8 (17th October 2023)
+----------------------
+
+- Modified documentation
