@@ -116,6 +116,35 @@ This function reads the CSV file and plots the circularity distribution using a 
 - `csv_directory`: The directory where the CSV file is located.
 
 
+#### `line_scan(image, image_bse, masks, circularity_threshold, min_area, csv_file, pixel_to_micron, line_distance_man, plot=False)``
+
+Perform line scanning analysis on segmented masks within an image and store the results in a CSV file.
+
+- `image`: The original image in which the masks are segmented.
+- `image_bse`: A backscattered electron (BSE) image corresponding to the input image.
+- `masks`: A list of dictionaries, where each dictionary represents a segmented mask and its properties. Each dictionary should have the following keys:
+    - `segmentation`: A binary mask representing the segmented region.
+    - `area`: The area of the segmented region in square pixels.
+    - `predicted_iou`: Predicted intersection over union (IOU) value for the mask.
+    - `bbox`: Bounding box coordinates [x, y, w, h] of the segmented region.
+    - `point_coords`: Coordinates of points within the mask.
+    - `stability_score`: A stability score for the mask.
+    - `crop_box`: Bounding box coordinates [x, y, w, h] of the cropped mask region.
+- `circularity_threshold`: Minimum circularity value for a mask to be considered in the analysis.
+- `min_area`: Minimum area of a mask (in square micrometers) to be considered in the analysis.
+- `csv_file`: Path to the CSV file where mask details and analysis results will be saved.
+- `pixel_to_micron`: Conversion factor to convert pixel measurements to micrometers.
+- `line_distance_man`: Manually set line scanning distance in pixels.
+- `plot`: If True, generate and display plots during the analysis (default is False).
+
+This function performs line scanning analysis on segmented masks to classify each mask as a 'cenosphere' or a 'solid sphere' based on the presence of line minima within the mask. The results, including circularity, area, perimeter, diameter, and type of each mask, are written to a CSV file.
+
+Circular masks with circularity above the specified threshold and area greater than the specified minimum are considered for line scanning. For each mask, a line scanning analysis is performed along the vertical axis within the bounding box of the mask. The analysis includes fitting a polynomial curve to the pixel values along the line scan and identifying maxima and minima points.
+
+The total number of line minima indices is used to classify the mask as a 'cenosphere' if it is greater than 0, or a 'solid sphere' if it is 0.
+
+Region properties (area, perimeter, diameter) are also calculated and converted from pixels to micrometers using the provided conversion factor. These properties are added to the CSV file, along with the mask details.
+
 ### Dependencies
 
 The code relies on the following dependencies:
